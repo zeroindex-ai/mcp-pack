@@ -1,0 +1,36 @@
+{
+  "name": "@zeroindex-ai/mcp-porkbun",
+  "version": "0.1.1",
+  "description": "MCP server exposing Porkbun domain and DNS APIs to Claude and other MCP clients",
+  "type": "module",
+  "bin": {
+    "mcp-porkbun": "dist/index.js"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": ["dist", "README.md", "LICENSE"],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx src/index.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "zod": "^4"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zeroindex-ai/mcp-pack.git",
+    "directory": "packages/porkbun"
+  },
+  "license": "MIT",
+  "keywords": ["mcp", "model-context-protocol", "claude", "porkbun", "dns", "domain"]
+}

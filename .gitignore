@@ -1,0 +1,12 @@
+node_modules/
+dist/
+*.tsbuildinfo
+coverage/
+.DS_Store
+.env*
+!.env.example
+*.pem
+*.key
+
+# local scratchpad — not for public consumption
+NOTES.md

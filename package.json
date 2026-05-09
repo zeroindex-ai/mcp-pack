@@ -1,0 +1,28 @@
+{
+  "name": "mcp-pack",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Open-source MCP servers for solo founders — Porkbun, Mercury, GitHub, Turso",
+  "repository": "github:zeroindex-ai/mcp-pack",
+  "license": "MIT",
+  "scripts": {
+    "build": "pnpm -r build",
+    "test": "pnpm -r test",
+    "typecheck": "pnpm -r typecheck",
+    "lint": "eslint ."
+  },
+  "devDependencies": {
+    "@eslint/js": "^9",
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "@types/node": "^22",
+    "@vitest/coverage-v8": "^4",
+    "eslint": "^9",
+    "tsx": "^4",
+    "typescript": "^5",
+    "typescript-eslint": "^8",
+    "vitest": "^4",
+    "zod": "^4"
+  },
+  "packageManager": "pnpm@10.33.2"
+}
