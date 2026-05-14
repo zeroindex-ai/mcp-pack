@@ -222,55 +222,13 @@ Should print your tool names. If it prints anything else, the server didn't boot
 
 ---
 
-## 8. Wire it into Claude Desktop and dogfood
+## 8. Dogfood it in a real MCP client
 
-1. **Generate the vendor token** at the vendor's console. Name it `claude-mcp-<host>` (replace `<host>` with your machine's hostname) so it's easy to revoke independently of other tokens.
+§7's handshake smoke test confirms the server *boots*. Before shipping, confirm the tools actually *work* by loading the server into a real MCP client — Claude Desktop, Claude Code, Cursor, Zed, or any other. This is the mcp-pack philosophy in practice ("the first user is always us"): every server wraps a tool that gets exercised against real data before release.
 
-2. **Add to `~/Library/Application Support/Claude/claude_desktop_config.json`** under `mcpServers`, alongside any existing entries. Two patterns — pick whichever fits your secrets workflow:
+Each client has its own config format for registering an stdio MCP server (a `command` + `args` + `env` entry pointing at the built `dist/index.js`) — see that client's docs. Supply the vendor credential via the env var the server expects, restart the client, then run the validator tool first (`ping` / `list_*` / `get_authenticated_user` — the no-arg tool each server ships for exactly this), followed by each other tool with realistic inputs.
 
-   **Pattern A — literal token (simplest):**
-
-   ```json
-   "<vendor>": {
-     "command": "node",
-     "args": ["/absolute/path/to/mcp-pack/packages/<vendor>/dist/index.js"],
-     "env": {
-       "VENDOR_API_TOKEN": "your-token-here"
-     }
-   }
-   ```
-
-   **Pattern B — inject from a secrets manager at spawn time** (1Password CLI shown; works similarly with other secret-manager CLIs):
-
-   ```json
-   "<vendor>": {
-     "command": "op",
-     "args": [
-       "run",
-       "--no-masking",
-       "--",
-       "node",
-       "/absolute/path/to/mcp-pack/packages/<vendor>/dist/index.js"
-     ],
-     "env": {
-       "VENDOR_API_TOKEN": "op://<your-vault>/<your-item>/credential"
-     }
-   }
-   ```
-
-   For two-field credentials (e.g. Porkbun's `apikey` + `secretapikey`), map both env vars accordingly. The `op://` reference syntax is documented at [1Password CLI docs](https://developer.1password.com/docs/cli/secrets-reference-syntax/).
-
-3. **Restart Claude Desktop fully** — `Cmd+Q` and reopen. Closing the window doesn't reload the config; if Claude is running when you save the JSON, it can overwrite your edits on the next prefs sync.
-
-4. **Verify** by asking *"What MCP tools do you have available?"* — confirms the spawn succeeded and tools registered.
-
-5. **Smoke-test** by running your validator tool first (the `ping` / `list_*` / `get_authenticated_user` designed for this purpose), then each other tool with realistic inputs.
-
-### Troubleshooting
-
-- **"INVALID_API_KEYS" or similar credential rejection (Pattern B)** — the secrets-manager wrapper isn't running. The config must have `"command": "op"` (or your equivalent) with the wrapper args, not `"command": "node"` with `op://...` env values. Without the wrapper, the literal reference string gets sent to the vendor as if it were the credential.
-- **Opaque failure** — check `~/Library/Logs/Claude/mcp-server-<vendor>.log`. Claude Desktop logs every spawn with resolved command + args + PATH, plus any stderr from the server.
-- **1Password CLI specifically: "No accounts configured for use with 1Password CLI"** — the 1Password app's Developer integration toggle got reset (commonly after app updates). Open 1Password → Settings → Developer → toggle "Integrate with 1Password CLI" back ON.
+How you store and inject the credential (plaintext in the config, a secrets-manager wrapper, an env file) is your call — the server only cares that the env var is set at spawn time.
 
 ---
 
