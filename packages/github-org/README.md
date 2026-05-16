@@ -4,20 +4,20 @@ MCP server exposing **read-only** GitHub APIs to Claude Desktop, Claude Code, Cu
 
 Lets you ask things like:
 
-- *"List all repos in the zeroindex-ai org with their last push dates."*
-- *"What pull requests are open across my repos?"*
-- *"Show recent CI runs for ask-zeroindex — any failures this week?"*
-- *"List open issues on mcp-pack."*
+- _"List all repos in the zeroindex-ai org with their last push dates."_
+- _"What pull requests are open across my repos?"_
+- _"Show recent CI runs for ask-zeroindex — any failures this week?"_
+- _"List open issues on mcp-pack."_
 
 ## Tools
 
-| Tool | What it does |
-|---|---|
+| Tool                     | What it does                                                                                                  |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------- |
 | `get_authenticated_user` | Returns the token owner, plan info, and repo counts. **Run this first** — it doubles as the credential check. |
-| `list_org_repos` | Repositories in the given org (filter by type/sort/page). |
-| `list_pull_requests` | PRs for a repo (filter by state: open / closed / all). |
-| `list_issues` | Issues for a repo (PRs are excluded). |
-| `list_workflow_runs` | Recent GitHub Actions runs (filter by workflow file, branch, event, status). |
+| `list_org_repos`         | Repositories in the given org (filter by type/sort/page).                                                     |
+| `list_pull_requests`     | PRs for a repo (filter by state: open / closed / all).                                                        |
+| `list_issues`            | Issues for a repo (PRs are excluded).                                                                         |
+| `list_workflow_runs`     | Recent GitHub Actions runs (filter by workflow file, branch, event, status).                                  |
 
 All five are **read-only**. Mutating tools (create issue, close PR, manage secrets) deliberately omitted in v0.1.
 
@@ -66,14 +66,7 @@ If you'd rather not paste the token into the config file, you can inject it at s
   "mcpServers": {
     "github-org": {
       "command": "op",
-      "args": [
-        "run",
-        "--no-masking",
-        "--",
-        "npx",
-        "-y",
-        "@zeroindex-ai/mcp-github-org"
-      ],
+      "args": ["run", "--no-masking", "--", "npx", "-y", "@zeroindex-ai/mcp-github-org"],
       "env": {
         "GITHUB_TOKEN": "op://<your-vault>/<your-item>/credential"
       }

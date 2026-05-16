@@ -4,20 +4,28 @@ MCP server exposing **read-only** [Mercury](https://mercury.com) banking APIs to
 
 Lets you ask things like:
 
-- *"List my Mercury accounts and current balances."*
-- *"Show me my checking-account transactions from last month."*
-- *"What's the largest expense in my treasury account this quarter?"*
-- *"How much did I spend on Anthropic in May?"*
+- _"List my Mercury accounts and current balances."_
+- _"Show me my checking-account transactions from last month."_
+- _"What's the largest expense in my treasury account this quarter?"_
+- _"How much did I spend on Anthropic in May?"_
 
 ## Tools
 
-| Tool | What it does |
-|---|---|
-| `list_accounts` | Returns every account in your Mercury workspace (checking, treasury, credit cards) with balances. **Run this first** — it doubles as the credential check and surfaces account IDs for the other tools. |
-| `get_account` | Returns full details for one account by ID. |
-| `list_transactions` | Returns transactions for an account, filterable by date range (`YYYY-MM-DD`) and paginated via `limit` / `offset`. |
+| Tool                | What it does                                                                                                                                                                                            |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `list_accounts`     | Returns every account in your Mercury workspace (checking, treasury, credit cards) with balances. **Run this first** — it doubles as the credential check and surfaces account IDs for the other tools. |
+| `get_account`       | Returns full details for one account by ID.                                                                                                                                                             |
+| `list_transactions` | Returns transactions for an account, filterable by date range (`YYYY-MM-DD`) and paginated via `limit` / `offset`.                                                                                      |
 
 All three are **read-only**. No transfers, no recipient management, no destructive actions. Mutating tools deliberately omitted; coming in a later release behind an explicit opt-in.
+
+## Privacy
+
+This is a banking server. Two specifics worth stating before you wire it up:
+
+- **ACH account and routing numbers are REDACTED by default.** `get_account` returns `accountNumber` and `routingNumber` as `"***REDACTED***"` unless the caller explicitly passes `includeBankNumbers: true`. The default keeps the raw ACH digits from being piped into your LLM context just because the model decided to look up an account. Set the flag to `true` only when the user has actually asked to see the numbers.
+- **Your Mercury API token authorizes writes**, even though this package only calls GET endpoints. Treat it like a banking credential: keep it out of source control, rotate if exposed, and use a dedicated token for this MCP server (not your one general-purpose token).
+- **Data flow.** Mercury → this process → your MCP client → the LLM you've configured. Nothing is cached, persisted, or logged by this server. Pick your LLM client accordingly.
 
 ## Install
 
@@ -27,7 +35,7 @@ npx -y @zeroindex-ai/mcp-mercury
 
 ## Configure
 
-You need a Mercury API token. Generate one at [app.mercury.com/settings/tokens](https://app.mercury.com/settings/tokens). The token authorizes both reads and writes across all accounts on your workspace, so even though this package only exercises the read endpoints, **treat the token like a banking credential** — keep it out of source control, rotate if exposed, and use a dedicated token for this MCP server (not your one general-purpose token).
+You need a Mercury API token. Generate one at [app.mercury.com/settings/tokens](https://app.mercury.com/settings/tokens). See the [Privacy](#privacy) section above for handling guidance.
 
 Set as `MERCURY_API_TOKEN` in your MCP client config (next section).
 
@@ -70,9 +78,9 @@ pnpm install
 MERCURY_API_TOKEN=secret-token-xxxx pnpm --filter @zeroindex-ai/mcp-mercury dev
 ```
 
-## Privacy / data handling
+## Network
 
-This server makes outbound HTTPS calls to `api.mercury.com` only. It stores nothing locally, holds no cache, and emits no telemetry. Your transaction data flows: Mercury → this process → your MCP client → the LLM you've configured. Pick your LLM client accordingly.
+Outbound HTTPS calls are made to `api.mercury.com` only. No telemetry; nothing else leaves the process. See [Privacy](#privacy) above for the data-handling specifics.
 
 ## License
 

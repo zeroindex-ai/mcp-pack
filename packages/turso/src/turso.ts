@@ -15,7 +15,9 @@
 // api-reference) on 2026-05-11. The `list_databases` tool exists to
 // validate token + org slug + network at runtime — call it first.
 
-const BASE = 'https://api.turso.tech';
+import { createClient, HttpError, type Client } from '@zeroindex-ai/_http';
+
+const BASE = 'https://api.turso.tech/v1';
 
 function getToken(): string {
   const token = process.env.TURSO_API_TOKEN;
@@ -33,28 +35,28 @@ function getOrgSlug(): string {
   return slug;
 }
 
+function client(): Client {
+  return createClient({
+    vendor: 'Turso',
+    baseUrl: BASE,
+    auth: { kind: 'bearer', token: getToken() },
+    defaultHeaders: { Accept: 'application/json' },
+  });
+}
+
 export async function tg<T>(
   path: string,
   query: Record<string, string | number | undefined> = {}
 ): Promise<T> {
-  const url = new URL(`${BASE}/v1/organizations/${encodeURIComponent(getOrgSlug())}${path}`);
-  for (const [k, v] of Object.entries(query)) {
-    if (v !== undefined) url.searchParams.set(k, String(v));
-  }
-  const res = await fetch(url, {
+  const slug = encodeURIComponent(getOrgSlug());
+  return client()<T>({
     method: 'GET',
-    headers: {
-      authorization: `Bearer ${getToken()}`,
-      accept: 'application/json',
-    },
-    signal: AbortSignal.timeout(30_000),
+    path: `/organizations/${slug}${path}`,
+    query,
   });
-  if (!res.ok) {
-    const text = await res.text().catch(() => '');
-    throw new Error(`Turso ${path} HTTP ${res.status}: ${text || res.statusText}`);
-  }
-  return (await res.json()) as T;
 }
+
+export { HttpError };
 
 export type DatabaseParent = {
   id: string;

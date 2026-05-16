@@ -6,12 +6,12 @@ Each server is a small, narrowly-scoped wrapper around one third-party API, desi
 
 ## Servers
 
-| Package | Wraps | npm |
-|---|---|---|
-| [`@zeroindex-ai/mcp-porkbun`](packages/porkbun) | Porkbun (domains + DNS) | [![npm](https://img.shields.io/npm/v/@zeroindex-ai/mcp-porkbun.svg)](https://www.npmjs.com/package/@zeroindex-ai/mcp-porkbun) |
-| [`@zeroindex-ai/mcp-mercury`](packages/mercury) | Mercury (banking, read-only) | [![npm](https://img.shields.io/npm/v/@zeroindex-ai/mcp-mercury.svg)](https://www.npmjs.com/package/@zeroindex-ai/mcp-mercury) |
+| Package                                               | Wraps                                | npm                                                                                                                                 |
+| ----------------------------------------------------- | ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------- |
+| [`@zeroindex-ai/mcp-porkbun`](packages/porkbun)       | Porkbun (domains + DNS)              | [![npm](https://img.shields.io/npm/v/@zeroindex-ai/mcp-porkbun.svg)](https://www.npmjs.com/package/@zeroindex-ai/mcp-porkbun)       |
+| [`@zeroindex-ai/mcp-mercury`](packages/mercury)       | Mercury (banking, read-only)         | [![npm](https://img.shields.io/npm/v/@zeroindex-ai/mcp-mercury.svg)](https://www.npmjs.com/package/@zeroindex-ai/mcp-mercury)       |
 | [`@zeroindex-ai/mcp-github-org`](packages/github-org) | GitHub (repos, PRs, issues, Actions) | [![npm](https://img.shields.io/npm/v/@zeroindex-ai/mcp-github-org.svg)](https://www.npmjs.com/package/@zeroindex-ai/mcp-github-org) |
-| [`@zeroindex-ai/mcp-turso`](packages/turso) | Turso (databases, groups, usage) | [![npm](https://img.shields.io/npm/v/@zeroindex-ai/mcp-turso.svg)](https://www.npmjs.com/package/@zeroindex-ai/mcp-turso) |
+| [`@zeroindex-ai/mcp-turso`](packages/turso)           | Turso (databases, groups, usage)     | [![npm](https://img.shields.io/npm/v/@zeroindex-ai/mcp-turso.svg)](https://www.npmjs.com/package/@zeroindex-ai/mcp-turso)           |
 
 ## Install
 

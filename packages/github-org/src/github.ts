@@ -4,6 +4,11 @@
 // (classic or fine-grained) provisioned at github.com/settings/tokens.
 // Endpoints used here are read-only (GET); see README for required scopes.
 // The `get_authenticated_user` tool doubles as a runtime credential check.
+//
+// Rate-limit handling (429 + 403/x-ratelimit-remaining:0) is delegated to the
+// shared @zeroindex-ai/_http client.
+
+import { createClient, HttpError, type Client } from '@zeroindex-ai/_http';
 
 const BASE = 'https://api.github.com';
 const API_VERSION = '2022-11-28';
@@ -17,30 +22,34 @@ function getToken(): string {
   return token;
 }
 
+function client(): Client {
+  return createClient({
+    vendor: 'GitHub',
+    baseUrl: BASE,
+    auth: { kind: 'bearer', token: getToken() },
+    defaultHeaders: {
+      Accept: 'application/vnd.github+json',
+      'X-GitHub-Api-Version': API_VERSION,
+      'User-Agent': USER_AGENT,
+    },
+  });
+}
+
 export async function gh<T>(
   path: string,
   query: Record<string, string | number | boolean | undefined> = {}
 ): Promise<T> {
-  const url = new URL(`${BASE}${path}`);
+  // Re-narrow boolean values to strings for the shared client (which accepts
+  // string | number | undefined). Matches existing call-site behaviour.
+  const stringified: Record<string, string | number | undefined> = {};
   for (const [k, v] of Object.entries(query)) {
-    if (v !== undefined) url.searchParams.set(k, String(v));
+    if (v === undefined) continue;
+    stringified[k] = typeof v === 'boolean' ? String(v) : v;
   }
-  const res = await fetch(url, {
-    method: 'GET',
-    headers: {
-      authorization: `Bearer ${getToken()}`,
-      accept: 'application/vnd.github+json',
-      'x-github-api-version': API_VERSION,
-      'user-agent': USER_AGENT,
-    },
-    signal: AbortSignal.timeout(30_000),
-  });
-  if (!res.ok) {
-    const text = await res.text().catch(() => '');
-    throw new Error(`GitHub ${path} HTTP ${res.status}: ${text || res.statusText}`);
-  }
-  return (await res.json()) as T;
+  return client()<T>({ method: 'GET', path, query: stringified });
 }
+
+export { HttpError };
 
 export type AuthenticatedUser = {
   login: string;

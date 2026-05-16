@@ -9,6 +9,8 @@
 // The `list_accounts` tool exists precisely to validate token + network
 // at runtime — call it first if anything looks off.
 
+import { createClient, HttpError, type Client } from '@zeroindex-ai/_http';
+
 const BASE = 'https://api.mercury.com/api/v1';
 
 function getToken(): string {
@@ -19,25 +21,23 @@ function getToken(): string {
   return token;
 }
 
-export async function mg<T>(path: string, query: Record<string, string | number | undefined> = {}): Promise<T> {
-  const url = new URL(`${BASE}${path}`);
-  for (const [k, v] of Object.entries(query)) {
-    if (v !== undefined) url.searchParams.set(k, String(v));
-  }
-  const res = await fetch(url, {
-    method: 'GET',
-    headers: {
-      authorization: `Bearer ${getToken()}`,
-      accept: 'application/json',
-    },
-    signal: AbortSignal.timeout(30_000),
+function client(): Client {
+  return createClient({
+    vendor: 'Mercury',
+    baseUrl: BASE,
+    auth: { kind: 'bearer', token: getToken() },
+    defaultHeaders: { Accept: 'application/json' },
   });
-  if (!res.ok) {
-    const text = await res.text().catch(() => '');
-    throw new Error(`Mercury ${path} HTTP ${res.status}: ${text || res.statusText}`);
-  }
-  return (await res.json()) as T;
 }
+
+export async function mg<T>(
+  path: string,
+  query: Record<string, string | number | undefined> = {}
+): Promise<T> {
+  return client()<T>({ method: 'GET', path, query });
+}
+
+export { HttpError };
 
 export type Account = {
   id: string;

@@ -23,16 +23,14 @@ describe('gh', () => {
     expect(String(call[0])).toBe('https://api.github.com/user');
     expect(call[1]?.method).toBe('GET');
     const headers = call[1]?.headers as Record<string, string>;
-    expect(headers.authorization).toBe('Bearer test-token');
-    expect(headers.accept).toBe('application/vnd.github+json');
-    expect(headers['x-github-api-version']).toBe('2022-11-28');
-    expect(headers['user-agent']).toContain('mcp-github-org');
+    expect(headers.Authorization).toBe('Bearer test-token');
+    expect(headers.Accept).toBe('application/vnd.github+json');
+    expect(headers['X-GitHub-Api-Version']).toBe('2022-11-28');
+    expect(headers['User-Agent']).toContain('mcp-github-org');
   });
 
   it('serializes query params and skips undefined values', async () => {
-    const fetchSpy = vi
-      .spyOn(globalThis, 'fetch')
-      .mockResolvedValue(new Response(JSON.stringify([])));
+    const fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(JSON.stringify([])));
 
     await gh('/orgs/zeroindex-ai/repos', {
       type: 'all',
@@ -65,6 +63,64 @@ describe('gh', () => {
   it('throws when GITHUB_TOKEN is missing', async () => {
     delete process.env.GITHUB_TOKEN;
     await expect(gh('/user')).rejects.toThrow(/GITHUB_TOKEN/);
+  });
+
+  it('retries once on 429 and returns the second response on success', async () => {
+    const fetchSpy = vi
+      .spyOn(globalThis, 'fetch')
+      .mockResolvedValueOnce(
+        new Response('rate limited', {
+          status: 429,
+          headers: { 'retry-after': '0' },
+        })
+      )
+      .mockResolvedValueOnce(new Response(JSON.stringify({ login: 'abhi' })));
+
+    const out = await gh<{ login: string }>('/user');
+
+    expect(fetchSpy).toHaveBeenCalledTimes(2);
+    expect(out).toEqual({ login: 'abhi' });
+  });
+
+  it('retries once on 403 with x-ratelimit-remaining: 0 honouring x-ratelimit-reset', async () => {
+    const resetEpochSec = Math.floor(Date.now() / 1000); // already-elapsed → ~1s fallback in retryAfterMs
+    const fetchSpy = vi
+      .spyOn(globalThis, 'fetch')
+      .mockResolvedValueOnce(
+        new Response('api rate limit exceeded', {
+          status: 403,
+          headers: {
+            'x-ratelimit-remaining': '0',
+            'x-ratelimit-reset': String(resetEpochSec),
+          },
+        })
+      )
+      .mockResolvedValueOnce(new Response(JSON.stringify([])));
+
+    await gh('/orgs/zeroindex-ai/repos');
+
+    expect(fetchSpy).toHaveBeenCalledTimes(2);
+  });
+
+  it('propagates the error after one retry still fails', async () => {
+    const fetchSpy = vi
+      .spyOn(globalThis, 'fetch')
+      .mockResolvedValueOnce(new Response('rate limited', { status: 429, headers: { 'retry-after': '0' } }))
+      .mockResolvedValueOnce(
+        new Response('still rate limited', { status: 429, headers: { 'retry-after': '0' } })
+      );
+
+    await expect(gh('/user')).rejects.toThrow(/HTTP 429/);
+    expect(fetchSpy).toHaveBeenCalledTimes(2);
+  });
+
+  it('does not retry on plain 403 without rate-limit headers', async () => {
+    const fetchSpy = vi
+      .spyOn(globalThis, 'fetch')
+      .mockResolvedValue(new Response('forbidden', { status: 403 }));
+
+    await expect(gh('/user')).rejects.toThrow(/HTTP 403/);
+    expect(fetchSpy).toHaveBeenCalledTimes(1);
   });
 });
 
@@ -100,9 +156,7 @@ describe('filterOutPullRequests', () => {
 
 describe('workflowRunsPath', () => {
   it('returns the repo-wide path when no workflow is given', () => {
-    expect(workflowRunsPath('zeroindex-ai', 'mcp-pack')).toBe(
-      '/repos/zeroindex-ai/mcp-pack/actions/runs'
-    );
+    expect(workflowRunsPath('zeroindex-ai', 'mcp-pack')).toBe('/repos/zeroindex-ai/mcp-pack/actions/runs');
   });
 
   it('returns the workflow-scoped path when a workflow file is given', () => {

@@ -4,17 +4,17 @@ MCP server exposing [Porkbun](https://porkbun.com)'s domain and DNS APIs to Clau
 
 Lets you ask things like:
 
-- *"List all my domains and their expiry dates."*
-- *"Show me every DNS record on zeroindex.ai."*
-- *"Which of my domains expire in the next 90 days?"*
+- _"List all my domains and their expiry dates."_
+- _"Show me every DNS record on zeroindex.ai."_
+- _"Which of my domains expire in the next 90 days?"_
 
 ## Tools
 
-| Tool | What it does |
-|---|---|
-| `ping` | Verifies your Porkbun API credentials work; returns the calling IP. Run this first if anything looks broken. |
-| `list_domains` | Returns every domain in the account with status, expiry, auto-renew, and (optionally) labels. Supports pagination. |
-| `list_dns_records` | Returns every DNS record (A, AAAA, CNAME, MX, TXT, etc.) for a given domain. |
+| Tool               | What it does                                                                                                       |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------ |
+| `ping`             | Verifies your Porkbun API credentials work; returns the calling IP. Run this first if anything looks broken.       |
+| `list_domains`     | Returns every domain in the account with status, expiry, auto-renew, and (optionally) labels. Supports pagination. |
+| `list_dns_records` | Returns every DNS record (A, AAAA, CNAME, MX, TXT, etc.) for a given domain.                                       |
 
 All three are read-only. Mutating tools (renew, edit DNS) deliberately omitted in v0.1; coming in a later release.
 

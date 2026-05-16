@@ -4,19 +4,19 @@ MCP server exposing **read-only** [Turso](https://turso.tech) Platform APIs to C
 
 Lets you ask things like:
 
-- *"List my Turso databases and which group each is in."*
-- *"How many rows did `prod-app` read this month?"*
-- *"Am I close to the storage cap on my hobby tier?"*
-- *"Which databases live in the `default` group?"*
+- _"List my Turso databases and which group each is in."_
+- _"How many rows did `prod-app` read this month?"_
+- _"Am I close to the storage cap on my hobby tier?"_
+- _"Which databases live in the `default` group?"_
 
 ## Tools
 
-| Tool | What it does |
-|---|---|
-| `list_databases` | Returns every database in the configured Turso organization (name, hostname, regions, group, read/write block status). **Run this first** — it doubles as the credential check and surfaces the names every other tool needs. Optional `group` filter. |
-| `get_database` | Returns full details for a single database by name. |
-| `get_database_usage` | Returns `rows_read`, `rows_written`, `storage_bytes`, and `bytes_synced` for a database over a date range (ISO 8601 UTC). Defaults to the current calendar month. The killer tool for cost / quota questions. |
-| `list_groups` | Returns every group in the organization. Groups cluster databases across regions; each database belongs to exactly one. |
+| Tool                 | What it does                                                                                                                                                                                                                                           |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `list_databases`     | Returns every database in the configured Turso organization (name, hostname, regions, group, read/write block status). **Run this first** — it doubles as the credential check and surfaces the names every other tool needs. Optional `group` filter. |
+| `get_database`       | Returns full details for a single database by name.                                                                                                                                                                                                    |
+| `get_database_usage` | Returns `rows_read`, `rows_written`, `storage_bytes`, and `bytes_synced` for a database over a date range (ISO 8601 UTC). Defaults to the current calendar month. The killer tool for cost / quota questions.                                          |
+| `list_groups`        | Returns every group in the organization. Groups cluster databases across regions; each database belongs to exactly one.                                                                                                                                |
 
 All four are **read-only**. No database creation, no token rotation, no destructive actions. Mutating tools deliberately omitted; coming in a later release behind an explicit opt-in. The libSQL query API (running `SELECT` against your actual data) is intentionally not in this package — that's a separate concern with a different auth flow.
 

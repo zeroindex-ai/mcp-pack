@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { pb } from './porkbun.js';
+import { pb, PorkbunError } from './porkbun.js';
+import { HttpError } from '@zeroindex-ai/_http';
 
 describe('pb', () => {
   beforeEach(() => {
@@ -22,7 +23,7 @@ describe('pb', () => {
 
     expect(fetchSpy).toHaveBeenCalledOnce();
     const call = fetchSpy.mock.calls[0]!;
-    expect(call[0]).toBe('https://api.porkbun.com/api/json/v3/ping');
+    expect(String(call[0])).toBe('https://api.porkbun.com/api/json/v3/ping');
     expect(call[1]?.method).toBe('POST');
     const body = JSON.parse(call[1]?.body as string);
     expect(body).toMatchObject({ apikey: 'test-key', secretapikey: 'test-secret' });
@@ -40,15 +41,17 @@ describe('pb', () => {
     expect(body).toEqual({ apikey: 'test-key', secretapikey: 'test-secret', start: '1000' });
   });
 
-  it('throws on Porkbun-level non-SUCCESS status', async () => {
-    vi.spyOn(globalThis, 'fetch').mockResolvedValue(
-      new Response(JSON.stringify({ status: 'ERROR', message: 'Invalid API key' }))
+  it('throws PorkbunError on Porkbun-level non-SUCCESS status', async () => {
+    vi.spyOn(globalThis, 'fetch').mockImplementation(
+      async () => new Response(JSON.stringify({ status: 'ERROR', message: 'Invalid API key' }))
     );
+    await expect(pb('/ping')).rejects.toBeInstanceOf(PorkbunError);
     await expect(pb('/ping')).rejects.toThrow(/Invalid API key/);
   });
 
-  it('throws on transport-level HTTP error', async () => {
-    vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response('forbidden', { status: 403 }));
+  it('throws HttpError on transport-level HTTP error', async () => {
+    vi.spyOn(globalThis, 'fetch').mockImplementation(async () => new Response('forbidden', { status: 403 }));
+    await expect(pb('/ping')).rejects.toBeInstanceOf(HttpError);
     await expect(pb('/ping')).rejects.toThrow(/HTTP 403/);
   });
 

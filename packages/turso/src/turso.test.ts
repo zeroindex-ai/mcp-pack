@@ -25,8 +25,8 @@ describe('tg', () => {
     expect(String(call[0])).toBe('https://api.turso.tech/v1/organizations/acme/databases');
     expect(call[1]?.method).toBe('GET');
     const headers = call[1]?.headers as Record<string, string>;
-    expect(headers.authorization).toBe('Bearer test-token');
-    expect(headers.accept).toBe('application/json');
+    expect(headers.Authorization).toBe('Bearer test-token');
+    expect(headers.Accept).toBe('application/json');
   });
 
   it('serializes query params and skips undefined values', async () => {
@@ -53,9 +53,7 @@ describe('tg', () => {
 
   it('throws on 404 with the response body forwarded into the error', async () => {
     vi.spyOn(globalThis, 'fetch').mockImplementation(() =>
-      Promise.resolve(
-        new Response(JSON.stringify({ error: 'database not found' }), { status: 404 })
-      )
+      Promise.resolve(new Response(JSON.stringify({ error: 'database not found' }), { status: 404 }))
     );
     await expect(tg('/databases/nope')).rejects.toThrow(/HTTP 404.*database not found/);
   });

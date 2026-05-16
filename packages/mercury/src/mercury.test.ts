@@ -23,8 +23,8 @@ describe('mg', () => {
     expect(String(call[0])).toBe('https://api.mercury.com/api/v1/accounts');
     expect(call[1]?.method).toBe('GET');
     const headers = call[1]?.headers as Record<string, string>;
-    expect(headers.authorization).toBe('Bearer test-token');
-    expect(headers.accept).toBe('application/json');
+    expect(headers.Authorization).toBe('Bearer test-token');
+    expect(headers.Accept).toBe('application/json');
   });
 
   it('serializes query params and skips undefined values', async () => {
@@ -50,9 +50,7 @@ describe('mg', () => {
   });
 
   it('includes response body in error message when available', async () => {
-    vi.spyOn(globalThis, 'fetch').mockResolvedValue(
-      new Response('bad token', { status: 403 })
-    );
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response('bad token', { status: 403 }));
     await expect(mg('/accounts')).rejects.toThrow(/bad token/);
   });
 
