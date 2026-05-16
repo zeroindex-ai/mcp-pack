@@ -43,7 +43,6 @@ mcp-pack/
 ├── pnpm-workspace.yaml
 ├── tsconfig.base.json
 ├── eslint.config.mjs
-├── SKILLS.md                # recipe for adding new packages
 └── .github/workflows/ci.yml
 ```
 
