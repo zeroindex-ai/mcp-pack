@@ -1,6 +1,6 @@
 {
   "name": "@zeroindex-ai/mcp-porkbun",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "MCP server exposing Porkbun domain and DNS APIs to Claude and other MCP clients",
   "type": "module",
   "bin": {
