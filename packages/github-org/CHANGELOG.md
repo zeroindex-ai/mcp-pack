@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-05-18
+
+No functional changes. Version bumped to keep `mcp-pack` packages in lockstep with the `mcp-mercury` / `mcp-porkbun` / `mcp-turso` 0.2.1 patch. This package was unaffected because every tool maps the vendor response to an explicit projection before returning `structuredContent`, so the strict output schemas don't see unknown keys.
+
 ## [0.2.0] - 2026-05-17
 
 ### Added

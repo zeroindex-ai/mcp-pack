@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-05-18
+
+No functional changes. Version bumped to keep `mcp-pack` packages in lockstep with the `mcp-mercury` / `mcp-porkbun` / `mcp-turso` 0.2.1 patch.
+
 ## [0.2.0] - 2026-05-17
 
 Initial public release. Promoted from the internal `@zeroindex-ai/_http` workspace package so the four MCP server packages in `mcp-pack` can be published with a real npm-resolvable dependency.

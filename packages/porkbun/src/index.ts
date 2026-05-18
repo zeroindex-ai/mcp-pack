@@ -15,25 +15,29 @@ const pingOutput = z.object({
 
 const listDomainsOutput = z.object({
   domains: z.array(
-    z.object({
-      domain: z.string(),
-      status: z.string(),
-      tld: z.string().optional(),
-      createDate: z.string().optional(),
-      expireDate: z.string().optional(),
-    })
+    z
+      .object({
+        domain: z.string(),
+        status: z.string(),
+        tld: z.string().optional(),
+        createDate: z.string().optional(),
+        expireDate: z.string().optional(),
+      })
+      .passthrough()
   ),
 });
 
 const listDnsRecordsOutput = z.object({
   records: z.array(
-    z.object({
-      id: z.string(),
-      name: z.string(),
-      type: z.string(),
-      content: z.string(),
-      ttl: z.string().optional(),
-    })
+    z
+      .object({
+        id: z.string(),
+        name: z.string(),
+        type: z.string(),
+        content: z.string(),
+        ttl: z.string().optional(),
+      })
+      .passthrough()
   ),
 });
 

@@ -35,12 +35,14 @@ const getDatabaseOutput = z.object({
 });
 
 const getDatabaseUsageOutput = z.object({
-  usage: z.object({
-    rows_read: z.number().optional(),
-    rows_written: z.number().optional(),
-    storage_bytes: z.number().optional(),
-    bytes_synced: z.number().optional(),
-  }),
+  usage: z
+    .object({
+      rows_read: z.number().optional(),
+      rows_written: z.number().optional(),
+      storage_bytes: z.number().optional(),
+      bytes_synced: z.number().optional(),
+    })
+    .passthrough(),
 });
 
 const listGroupsOutput = z.object({

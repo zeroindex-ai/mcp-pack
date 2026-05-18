@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-05-18
+
+### Fixed
+
+- `get_database_usage` passes Turso's raw `total` object into `structuredContent`; the `usage` schema now allows unknown keys (`.passthrough()`) so harmless vendor-side additions don't fail validation in MCP clients. Same class of bug fixed in `mcp-mercury@0.2.1`.
+
 ## [0.2.0] - 2026-05-17
 
 ### Added

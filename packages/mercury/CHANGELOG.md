@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-05-18
+
+### Fixed
+
+- `list_accounts`, `get_account`, and `list_transactions` output schemas now accept unknown keys (`.passthrough()`) on every vendor-shaped object. Mercury's API returns fields beyond the documented set, and the strict `z.object()` validators introduced in 0.2.0 caused MCP clients to reject `structuredContent` so the tool calls failed in Claude Desktop.
+
 ## [0.2.0] - 2026-05-17
 
 ### Changed

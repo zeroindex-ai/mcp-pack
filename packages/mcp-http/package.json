@@ -1,6 +1,6 @@
 {
   "name": "@zeroindex-ai/mcp-http",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Small HTTP client shared by @zeroindex-ai/mcp-* servers — auth (bearer/body/none), 30s timeout, 429 + x-ratelimit-remaining retry, structured HttpError.",
   "type": "module",
   "main": "dist/index.js",

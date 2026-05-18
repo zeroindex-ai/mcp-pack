@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-05-18
+
+### Fixed
+
+- `list_domains` and `list_dns_records` pass raw vendor objects into `structuredContent`; their array-element schemas now allow unknown keys (`.passthrough()`) so harmless Porkbun-side additions don't fail validation in MCP clients. Same class of bug fixed in `mcp-mercury@0.2.1`.
+
 ## [0.2.0] - 2026-05-17
 
 ### Added
