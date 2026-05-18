@@ -13,6 +13,12 @@ Each server is a small, narrowly-scoped wrapper around one third-party API, desi
 | [`@zeroindex-ai/mcp-github-org`](packages/github-org) | GitHub (repos, PRs, issues, Actions) | [![npm](https://img.shields.io/npm/v/@zeroindex-ai/mcp-github-org.svg)](https://www.npmjs.com/package/@zeroindex-ai/mcp-github-org) |
 | [`@zeroindex-ai/mcp-turso`](packages/turso)           | Turso (databases, groups, usage)     | [![npm](https://img.shields.io/npm/v/@zeroindex-ai/mcp-turso.svg)](https://www.npmjs.com/package/@zeroindex-ai/mcp-turso)           |
 
+Plus one shared helper:
+
+| Package                                       | What it is                                                                               | npm                                                                                                                     |
+| --------------------------------------------- | ---------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| [`@zeroindex-ai/mcp-http`](packages/mcp-http) | Small HTTP client shared by the four servers — auth, 30s timeout, 429 retry, `HttpError` | [![npm](https://img.shields.io/npm/v/@zeroindex-ai/mcp-http.svg)](https://www.npmjs.com/package/@zeroindex-ai/mcp-http) |
+
 ## Install
 
 Each server is `npx`-runnable — no clone or build needed:
@@ -35,6 +41,7 @@ See each package's README for configuration (required env vars) and `claude_desk
 ```
 mcp-pack/
 ├── packages/
+│   ├── mcp-http/            # @zeroindex-ai/mcp-http        (shared HTTP client)
 │   ├── porkbun/             # @zeroindex-ai/mcp-porkbun
 │   ├── mercury/             # @zeroindex-ai/mcp-mercury
 │   ├── github-org/          # @zeroindex-ai/mcp-github-org
@@ -43,7 +50,9 @@ mcp-pack/
 ├── pnpm-workspace.yaml
 ├── tsconfig.base.json
 ├── eslint.config.mjs
-└── .github/workflows/ci.yml
+└── .github/workflows/
+    ├── ci.yml               # lint, build, typecheck, test on push + PR
+    └── release.yml          # tag-driven publish to npm with provenance
 ```
 
 ## Develop

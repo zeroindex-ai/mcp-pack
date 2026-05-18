@@ -34,7 +34,7 @@ jobs:
 
       - run: pnpm lint
 
-      # Build first so workspace deps (notably @zeroindex-ai/_http) emit
+      # Build first so workspace deps (notably @zeroindex-ai/mcp-http) emit
       # their dist/ before downstream packages typecheck against them.
       - run: pnpm build
 
