@@ -9,7 +9,7 @@
 // The `list_accounts` tool exists precisely to validate token + network
 // at runtime — call it first if anything looks off.
 
-import { createClient, HttpError, type Client } from '@zeroindex-ai/_http';
+import { createClient, HttpError, type Client } from '@zeroindex-ai/mcp-http';
 
 const BASE = 'https://api.mercury.com/api/v1';
 

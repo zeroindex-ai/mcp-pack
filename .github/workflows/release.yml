@@ -1,0 +1,96 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          registry-url: https://registry.npmjs.org
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Verify tag matches every published package's version
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          fail=0
+          for dir in mcp-http porkbun mercury github-org turso; do
+            v=$(node -p "require('./packages/$dir/package.json').version")
+            if [ "$tag" != "$v" ]; then
+              echo "::error::Tag v$tag does not match packages/$dir/package.json ($v)"
+              fail=1
+            fi
+          done
+          [ $fail -eq 0 ]
+
+      - run: pnpm lint
+
+      - run: pnpm build
+
+      - run: pnpm typecheck
+
+      - run: pnpm test
+
+      - name: Publish to npm with provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          # mcp-http first so its tarball exists on the registry before the
+          # four vendor packages, which depend on it via workspace:* (pnpm
+          # publish rewrites workspace:* to the resolved version on publish).
+          for dir in mcp-http porkbun mercury github-org turso; do
+            echo "::group::Publishing packages/$dir"
+            (cd "packages/$dir" && pnpm publish --provenance --access public --no-git-checks)
+            echo "::endgroup::"
+          done
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag="${GITHUB_REF_NAME}"
+          v="${tag#v}"
+          gh release create "$tag" \
+            --title "$tag — mcp-pack" \
+            --notes "Published five packages to npm with provenance:
+
+          - \`@zeroindex-ai/mcp-http@$v\`
+          - \`@zeroindex-ai/mcp-porkbun@$v\`
+          - \`@zeroindex-ai/mcp-mercury@$v\`
+          - \`@zeroindex-ai/mcp-github-org@$v\`
+          - \`@zeroindex-ai/mcp-turso@$v\`
+
+          See per-package \`CHANGELOG.md\` files for details:
+
+          - [mcp-http](https://github.com/zeroindex-ai/mcp-pack/blob/main/packages/mcp-http/CHANGELOG.md)
+          - [mcp-porkbun](https://github.com/zeroindex-ai/mcp-pack/blob/main/packages/porkbun/CHANGELOG.md)
+          - [mcp-mercury](https://github.com/zeroindex-ai/mcp-pack/blob/main/packages/mercury/CHANGELOG.md)
+          - [mcp-github-org](https://github.com/zeroindex-ai/mcp-pack/blob/main/packages/github-org/CHANGELOG.md)
+          - [mcp-turso](https://github.com/zeroindex-ai/mcp-pack/blob/main/packages/turso/CHANGELOG.md)"
+
+# Required GitHub Actions secret: NPM_TOKEN — an npm token (Automation classic OR
+# granular access with "Read and write" on the @zeroindex-ai scope) used by the
+# publish step. Set via:
+#   pbpaste | gh secret set NPM_TOKEN --repo zeroindex-ai/mcp-pack
+# Provenance signing requires id-token: write and the workflow running from the
+# same repo where the package is published; both conditions are met above.

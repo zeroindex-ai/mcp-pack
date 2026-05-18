@@ -14,7 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
-- HTTP client extracted to the shared workspace package `@zeroindex-ai/_http` (`createClient` factory with `kind: 'body'` auth for Porkbun's body-merged credentials). Behaviour unchanged at the wire level — same URLs, headers, body shape, status-field check, and `PorkbunError` semantics. Now benefits from the shared 429/rate-limit retry, central 30s timeout, and structured `HttpError`.
+- HTTP client extracted to the shared workspace package `@zeroindex-ai/mcp-http` (`createClient` factory with `kind: 'body'` auth for Porkbun's body-merged credentials). Behaviour unchanged at the wire level — same URLs, headers, body shape, status-field check, and `PorkbunError` semantics. Now benefits from the shared 429/rate-limit retry, central 30s timeout, and structured `HttpError`.
 - `McpServer` `name` and `version` now read from `package.json` via JSON module import instead of being hand-typed in `src/index.ts`. Eliminates the drift class that bit `mcp-github-org` in 0.1.x.
 
 ### Maintenance

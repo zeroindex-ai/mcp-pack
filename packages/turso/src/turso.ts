@@ -15,7 +15,7 @@
 // api-reference) on 2026-05-11. The `list_databases` tool exists to
 // validate token + org slug + network at runtime — call it first.
 
-import { createClient, HttpError, type Client } from '@zeroindex-ai/_http';
+import { createClient, HttpError, type Client } from '@zeroindex-ai/mcp-http';
 
 const BASE = 'https://api.turso.tech/v1';
 

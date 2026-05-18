@@ -1,11 +1,8 @@
 {
-  "name": "@zeroindex-ai/mcp-porkbun",
+  "name": "@zeroindex-ai/mcp-http",
   "version": "0.2.0",
-  "description": "MCP server exposing Porkbun domain and DNS APIs to Claude and other MCP clients",
+  "description": "Small HTTP client shared by @zeroindex-ai/mcp-* servers — auth (bearer/body/none), 30s timeout, 429 + x-ratelimit-remaining retry, structured HttpError.",
   "type": "module",
-  "bin": {
-    "mcp-porkbun": "dist/index.js"
-  },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
@@ -13,18 +10,20 @@
     "README.md",
     "LICENSE"
   ],
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
   "scripts": {
     "build": "tsc",
-    "dev": "tsx src/index.ts",
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
     "prepublishOnly": "pnpm build"
-  },
-  "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.29.0",
-    "@zeroindex-ai/mcp-http": "workspace:*",
-    "zod": "^4"
   },
   "engines": {
     "node": ">=20"
@@ -35,15 +34,15 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/zeroindex-ai/mcp-pack.git",
-    "directory": "packages/porkbun"
+    "directory": "packages/mcp-http"
   },
   "license": "MIT",
   "keywords": [
     "mcp",
     "model-context-protocol",
-    "claude",
-    "porkbun",
-    "dns",
-    "domain"
+    "http",
+    "http-client",
+    "rate-limit",
+    "retry"
   ]
 }

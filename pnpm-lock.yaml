@@ -42,28 +42,28 @@ importers:
         specifier: ^4
         version: 4.4.3
 
-  packages/_http: {}
-
   packages/github-org:
     dependencies:
       '@modelcontextprotocol/sdk':
         specifier: ^1.29.0
         version: 1.29.0(zod@4.4.3)
-      '@zeroindex-ai/_http':
+      '@zeroindex-ai/mcp-http':
         specifier: workspace:*
-        version: link:../_http
+        version: link:../mcp-http
       zod:
         specifier: ^4
         version: 4.4.3
+
+  packages/mcp-http: {}
 
   packages/mercury:
     dependencies:
       '@modelcontextprotocol/sdk':
         specifier: ^1.29.0
         version: 1.29.0(zod@4.4.3)
-      '@zeroindex-ai/_http':
+      '@zeroindex-ai/mcp-http':
         specifier: workspace:*
-        version: link:../_http
+        version: link:../mcp-http
       zod:
         specifier: ^4
         version: 4.4.3
@@ -73,9 +73,9 @@ importers:
       '@modelcontextprotocol/sdk':
         specifier: ^1.29.0
         version: 1.29.0(zod@4.4.3)
-      '@zeroindex-ai/_http':
+      '@zeroindex-ai/mcp-http':
         specifier: workspace:*
-        version: link:../_http
+        version: link:../mcp-http
       zod:
         specifier: ^4
         version: 4.4.3
@@ -85,9 +85,9 @@ importers:
       '@modelcontextprotocol/sdk':
         specifier: ^1.29.0
         version: 1.29.0(zod@4.4.3)
-      '@zeroindex-ai/_http':
+      '@zeroindex-ai/mcp-http':
         specifier: workspace:*
-        version: link:../_http
+        version: link:../mcp-http
       zod:
         specifier: ^4
         version: 4.4.3

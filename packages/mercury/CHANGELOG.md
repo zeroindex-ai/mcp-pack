@@ -11,7 +11,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Changed
 
 - **BREAKING:** `get_account` now redacts `accountNumber` and `routingNumber` from its response by default. Consumers who relied on the raw ACH numbers being piped to the LLM must opt in explicitly by passing `includeBankNumbers: true` in the tool's input. The README's Privacy section explains the rationale: an LLM does not need full bank-account numbers to answer common questions ("what's my balance?", "list my recent transactions"); shipping them by default is an unnecessary exposure.
-- HTTP client extracted to the shared workspace package `@zeroindex-ai/_http` (`createClient` with `kind: 'bearer'` auth). Wire-level behaviour unchanged.
+- HTTP client extracted to the shared workspace package `@zeroindex-ai/mcp-http` (`createClient` with `kind: 'bearer'` auth). Wire-level behaviour unchanged.
 - `McpServer` `name` and `version` now read from `package.json` instead of being hand-typed.
 
 ### Added

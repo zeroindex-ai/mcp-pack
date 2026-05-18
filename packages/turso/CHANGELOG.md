@@ -14,7 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
-- HTTP client extracted to the shared workspace package `@zeroindex-ai/_http` (`createClient` with bearer auth). Wire-level behaviour unchanged — org-slug path prefixing is still owned per-package. Now benefits from the shared 429/rate-limit retry, 30s timeout, and structured `HttpError`.
+- HTTP client extracted to the shared workspace package `@zeroindex-ai/mcp-http` (`createClient` with bearer auth). Wire-level behaviour unchanged — org-slug path prefixing is still owned per-package. Now benefits from the shared 429/rate-limit retry, 30s timeout, and structured `HttpError`.
 - `McpServer` `name` and `version` now read from `package.json` instead of being hand-typed.
 
 ### Maintenance

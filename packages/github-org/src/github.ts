@@ -6,9 +6,9 @@
 // The `get_authenticated_user` tool doubles as a runtime credential check.
 //
 // Rate-limit handling (429 + 403/x-ratelimit-remaining:0) is delegated to the
-// shared @zeroindex-ai/_http client.
+// shared @zeroindex-ai/mcp-http client.
 
-import { createClient, HttpError, type Client } from '@zeroindex-ai/_http';
+import { createClient, HttpError, type Client } from '@zeroindex-ai/mcp-http';
 
 const BASE = 'https://api.github.com';
 const API_VERSION = '2022-11-28';

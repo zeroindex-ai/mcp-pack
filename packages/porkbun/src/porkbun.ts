@@ -2,14 +2,14 @@
 //
 // Auth: every request is a POST with apikey + secretapikey merged into the
 // JSON body (Porkbun's design — credentials go in the body, not headers).
-// The shared @zeroindex-ai/_http client handles that merge via auth.kind=body.
+// The shared @zeroindex-ai/mcp-http client handles that merge via auth.kind=body.
 //
 // Endpoints used here are the read-only v3 calls documented at
 // https://porkbun.com/api/json/v3/documentation. The `ping` tool exists
 // precisely to validate credentials/network at runtime — call it first if
 // anything looks off.
 
-import { createClient, HttpError, type Client } from '@zeroindex-ai/_http';
+import { createClient, HttpError, type Client } from '@zeroindex-ai/mcp-http';
 
 const BASE = 'https://api.porkbun.com/api/json/v3';
 

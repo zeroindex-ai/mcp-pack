@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { pb, PorkbunError } from './porkbun.js';
-import { HttpError } from '@zeroindex-ai/_http';
+import { HttpError } from '@zeroindex-ai/mcp-http';
 
 describe('pb', () => {
   beforeEach(() => {
