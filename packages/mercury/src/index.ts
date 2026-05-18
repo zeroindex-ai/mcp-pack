@@ -10,35 +10,43 @@ import { mg, type Account, type ListAccountsResponse, type ListTransactionsRespo
 // harmless additions don't break tool calls.
 const listAccountsOutput = z.object({
   accounts: z.array(
-    z.object({
-      id: z.string(),
-      name: z.string(),
-      kind: z.string().optional(),
-      status: z.string().optional(),
-    })
+    z
+      .object({
+        id: z.string(),
+        name: z.string(),
+        kind: z.string().optional(),
+        status: z.string().optional(),
+      })
+      .passthrough()
   ),
 });
 
 const getAccountOutput = z.object({
-  account: z.object({
-    id: z.string(),
-    name: z.string(),
-    accountNumber: z.string().optional(),
-    routingNumber: z.string().optional(),
-  }),
+  account: z
+    .object({
+      id: z.string(),
+      name: z.string(),
+      accountNumber: z.string().optional(),
+      routingNumber: z.string().optional(),
+    })
+    .passthrough(),
 });
 
-const listTransactionsOutput = z.object({
-  transactions: z.array(
-    z.object({
-      id: z.string(),
-      amount: z.number(),
-      counterpartyName: z.string().optional(),
-      createdAt: z.string().optional(),
-      status: z.string().optional(),
-    })
-  ),
-});
+const listTransactionsOutput = z
+  .object({
+    transactions: z.array(
+      z
+        .object({
+          id: z.string(),
+          amount: z.number(),
+          counterpartyName: z.string().optional(),
+          createdAt: z.string().optional(),
+          status: z.string().optional(),
+        })
+        .passthrough()
+    ),
+  })
+  .passthrough();
 
 export function createServer(): McpServer {
   const server = new McpServer({
