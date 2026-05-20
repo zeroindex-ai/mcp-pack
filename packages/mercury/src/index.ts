@@ -6,6 +6,16 @@ import { z } from 'zod';
 import pkg from '../package.json' with { type: 'json' };
 import { mg, type Account, type ListAccountsResponse, type ListTransactionsResponse } from './mercury.js';
 
+// Sensitive ACH fields are replaced with this sentinel before any account
+// leaves the process, unless the caller explicitly opts in. Applied uniformly
+// by both list_accounts and get_account so the redaction promise holds for the
+// first call the README tells users to make.
+const REDACTED = '***REDACTED***';
+
+function redactAccount(account: Account): Account {
+  return { ...account, accountNumber: REDACTED, routingNumber: REDACTED };
+}
+
 // Permissive outputSchema shapes — vendor APIs drift; we keep these loose so
 // harmless additions don't break tool calls.
 const listAccountsOutput = z.object({
@@ -59,15 +69,24 @@ export function createServer(): McpServer {
     {
       title: 'List all Mercury accounts',
       description:
-        'Returns every account in the authenticated Mercury workspace — checking, treasury, credit cards — with current and available balances. Run this first to verify credentials and discover account IDs for the other tools.',
-      inputSchema: {},
+        'Returns every account in the authenticated Mercury workspace — checking, treasury, credit cards — with current and available balances. Run this first to verify credentials and discover account IDs for the other tools. By default the ACH account and routing numbers on each account are REDACTED before the response is returned to the LLM — pass includeBankNumbers: true to receive the real values.',
+      inputSchema: {
+        includeBankNumbers: z
+          .boolean()
+          .optional()
+          .default(false)
+          .describe(
+            'If true, ACH accountNumber and routingNumber are included verbatim for every account. Defaults to false, which replaces both fields with "***REDACTED***" before the data leaves this process. Only set true when the user has explicitly asked to see the raw numbers.'
+          ),
+      },
       outputSchema: listAccountsOutput.shape,
     },
-    async () => {
+    async ({ includeBankNumbers }) => {
       const data = await mg<ListAccountsResponse>('/accounts');
+      const accounts = includeBankNumbers ? data.accounts : data.accounts.map(redactAccount);
       return {
-        content: [{ type: 'text', text: JSON.stringify(data.accounts, null, 2) }],
-        structuredContent: { accounts: data.accounts },
+        content: [{ type: 'text', text: JSON.stringify(accounts, null, 2) }],
+        structuredContent: { accounts },
       };
     }
   );
@@ -92,9 +111,7 @@ export function createServer(): McpServer {
     },
     async ({ accountId, includeBankNumbers }) => {
       const data = await mg<Account>(`/account/${encodeURIComponent(accountId)}`);
-      const payload: Account = includeBankNumbers
-        ? data
-        : { ...data, accountNumber: '***REDACTED***', routingNumber: '***REDACTED***' };
+      const payload: Account = includeBankNumbers ? data : redactAccount(data);
       return {
         content: [{ type: 'text', text: JSON.stringify(payload, null, 2) }],
         structuredContent: { account: payload },

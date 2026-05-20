@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Fixed
+
+- `list_accounts` now redacts `accountNumber` and `routingNumber` for every account by default, matching `get_account`. Previously the first call the README recommends returned raw ACH digits to the LLM, contradicting the documented redaction-by-default promise. Pass `includeBankNumbers: true` to opt in to the raw values, exactly as on `get_account`. Redaction is now applied through a single shared helper, and tests pin both the default-redacted and opt-in behaviour for `list_accounts`.
+
 ## [0.2.1] - 2026-05-18
 
 ### Fixed
