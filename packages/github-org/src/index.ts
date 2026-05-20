@@ -15,56 +15,77 @@ import {
   type WorkflowRunsResponse,
 } from './github.js';
 
-// Permissive outputSchema shapes — vendor APIs drift; we keep these loose so
-// harmless additions don't break tool calls.
-const getAuthenticatedUserOutput = z.object({
-  login: z.string(),
-  id: z.number(),
-  name: z.string().nullable().optional(),
-});
+// Permissive outputSchema shapes — vendor APIs drift; we keep these loose
+// (`.passthrough()` on every vendor-shaped object) so harmless additions don't
+// break tool calls, matching the convention used by the porkbun, mercury, and
+// turso servers.
+//
+// Note on the content/structuredContent asymmetry (intentional, by decision):
+// the `content` text body for these tools carries the full raw GitHub vendor
+// object, while `structuredContent` is a deliberately curated projection.
+// GitHub org/repo/PR/issue metadata is low-sensitivity public-API data, so
+// surfacing the raw payload as text is useful for clients and not a leak. The
+// trimmed structured projection stays stable for programmatic consumers. This
+// differs from the higher-sensitivity servers (e.g. mercury) where the text
+// body is intentionally redacted/narrowed.
+const getAuthenticatedUserOutput = z
+  .object({
+    login: z.string(),
+    id: z.number(),
+    name: z.string().nullable().optional(),
+  })
+  .passthrough();
 
 const listOrgReposOutput = z.object({
   repos: z.array(
-    z.object({
-      name: z.string(),
-      full_name: z.string(),
-      private: z.boolean(),
-      description: z.string().nullable().optional(),
-    })
+    z
+      .object({
+        name: z.string(),
+        full_name: z.string(),
+        private: z.boolean(),
+        description: z.string().nullable().optional(),
+      })
+      .passthrough()
   ),
 });
 
 const listPullRequestsOutput = z.object({
   pull_requests: z.array(
-    z.object({
-      number: z.number(),
-      title: z.string(),
-      state: z.string(),
-      user: z.string().optional(),
-    })
+    z
+      .object({
+        number: z.number(),
+        title: z.string(),
+        state: z.string(),
+        user: z.string().optional(),
+      })
+      .passthrough()
   ),
 });
 
 const listIssuesOutput = z.object({
   issues: z.array(
-    z.object({
-      number: z.number(),
-      title: z.string(),
-      state: z.string(),
-      user: z.string().optional(),
-    })
+    z
+      .object({
+        number: z.number(),
+        title: z.string(),
+        state: z.string(),
+        user: z.string().optional(),
+      })
+      .passthrough()
   ),
 });
 
 const listWorkflowRunsOutput = z.object({
   runs: z.array(
-    z.object({
-      id: z.number(),
-      name: z.string(),
-      status: z.string(),
-      conclusion: z.string().nullable().optional(),
-      branch: z.string().optional(),
-    })
+    z
+      .object({
+        id: z.number(),
+        name: z.string(),
+        status: z.string(),
+        conclusion: z.string().nullable().optional(),
+        branch: z.string().optional(),
+      })
+      .passthrough()
   ),
 });
 
