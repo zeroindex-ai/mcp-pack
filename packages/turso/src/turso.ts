@@ -35,6 +35,9 @@ function getOrgSlug(): string {
   return slug;
 }
 
+// Built fresh on every call (cheap — just closure + config). Rebuilding per
+// request means a changed TURSO_API_TOKEN in the environment is picked up
+// without restarting; there is no connection to pool, so nothing is wasted.
 function client(): Client {
   return createClient({
     vendor: 'Turso',

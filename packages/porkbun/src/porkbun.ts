@@ -33,6 +33,9 @@ function getCreds(): { apikey: string; secretapikey: string } {
   return { apikey, secretapikey };
 }
 
+// Built fresh on every call (cheap — just closure + config). Rebuilding per
+// request means changed PORKBUN credentials in the environment are picked up
+// without restarting; there is no connection to pool, so nothing is wasted.
 function client(): Client {
   const { apikey, secretapikey } = getCreds();
   return createClient({

@@ -27,6 +27,22 @@ describe('createClient — URL + query', () => {
     expect(url).not.toContain('c=');
   });
 
+  it('serializes boolean query values as "true"/"false"', async () => {
+    const fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response('{}'));
+
+    const client = createClient({
+      vendor: 'Test',
+      baseUrl: 'https://api.example.com',
+      auth: { kind: 'none' },
+    });
+
+    await client({ path: '/things', query: { all: true, archived: false } });
+
+    const url = String(fetchSpy.mock.calls[0]![0]);
+    expect(url).toContain('all=true');
+    expect(url).toContain('archived=false');
+  });
+
   it('preserves the baseUrl path segments (no replacement)', async () => {
     const fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response('{}'));
 

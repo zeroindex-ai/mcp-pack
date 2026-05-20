@@ -123,7 +123,7 @@ export function createServer(): McpServer {
     {
       title: 'Get usage stats for a Turso database',
       description:
-        'Returns rows read, rows written, storage bytes, and bytes synced for a database over a date range. Defaults to the current calendar month. Use this to answer cost and quota questions.',
+        "Returns rows read, rows written, storage bytes, and bytes synced for a database over a date range. Omit from/to to use the Turso API's own default window. Use this to answer cost and quota questions.",
       inputSchema: {
         name: z.string().min(1).describe('The Turso database name (from list_databases).'),
         from: z
@@ -131,14 +131,14 @@ export function createServer(): McpServer {
           .datetime({ offset: true })
           .optional()
           .describe(
-            'Inclusive start instant (ISO 8601, e.g. 2026-05-01T00:00:00Z). Defaults to start of current calendar month.'
+            'Inclusive start instant (ISO 8601, e.g. 2026-05-01T00:00:00Z). Omit to let the Turso API choose the start of its default window.'
           ),
         to: z
           .string()
           .datetime({ offset: true })
           .optional()
           .describe(
-            'Inclusive end instant (ISO 8601, e.g. 2026-05-31T23:59:59Z). Defaults to end of current calendar month.'
+            'Inclusive end instant (ISO 8601, e.g. 2026-05-31T23:59:59Z). Omit to let the Turso API choose the end of its default window.'
           ),
       },
       outputSchema: getDatabaseUsageOutput.shape,

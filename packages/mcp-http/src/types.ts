@@ -15,7 +15,7 @@ export type ClientOptions = {
 export type RequestOptions = {
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
   path: string;
-  query?: Record<string, string | number | undefined>;
+  query?: Record<string, string | number | boolean | undefined>;
   body?: Record<string, unknown>;
   headers?: Record<string, string>;
 };
