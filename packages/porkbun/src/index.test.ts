@@ -45,4 +45,68 @@ describe('porkbun MCP server', () => {
     expect(result.content).toEqual([{ type: 'text', text: 'OK — your IP is 203.0.113.5' }]);
     expect(result.structuredContent).toEqual({ ok: true, yourIp: '203.0.113.5' });
   });
+
+  it('list_domains returns the MCP text-content envelope', async () => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          status: 'SUCCESS',
+          domains: [
+            {
+              domain: 'zeroindex.ai',
+              status: 'ACTIVE',
+              tld: 'ai',
+              createDate: '2026-01-01 00:00:00',
+              expireDate: '2027-01-01 00:00:00',
+            },
+          ],
+        })
+      )
+    );
+    const { client } = await connectClient();
+
+    const result = await client.callTool({ name: 'list_domains', arguments: {} });
+
+    const content = result.content as Array<{ type: string; text: string }>;
+    expect(content).toHaveLength(1);
+    expect(content[0]!.type).toBe('text');
+    const structured = result.structuredContent as { domains: Array<{ domain: string }> };
+    expect(structured.domains[0]!.domain).toBe('zeroindex.ai');
+  });
+
+  it('list_dns_records returns the MCP text-content envelope', async () => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          status: 'SUCCESS',
+          records: [{ id: '123', name: 'www.zeroindex.ai', type: 'A', content: '203.0.113.5', ttl: '600' }],
+        })
+      )
+    );
+    const { client } = await connectClient();
+
+    const result = await client.callTool({
+      name: 'list_dns_records',
+      arguments: { domain: 'zeroindex.ai' },
+    });
+
+    const content = result.content as Array<{ type: string; text: string }>;
+    expect(content).toHaveLength(1);
+    const structured = result.structuredContent as { records: Array<{ id: string; type: string }> };
+    expect(structured.records[0]!.id).toBe('123');
+    expect(structured.records[0]!.type).toBe('A');
+  });
+
+  it('surfaces an HTTP error as an MCP tool error (isError) on a non-2xx response', async () => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+      new Response(JSON.stringify({ status: 'ERROR', message: 'Invalid API key' }), { status: 401 })
+    );
+    const { client } = await connectClient();
+
+    const result = await client.callTool({ name: 'ping', arguments: {} });
+
+    expect(result.isError).toBe(true);
+    const content = result.content as Array<{ type: string; text: string }>;
+    expect(content[0]!.text).toMatch(/HTTP 401/);
+  });
 });

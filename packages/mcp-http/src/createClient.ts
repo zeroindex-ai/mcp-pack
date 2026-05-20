@@ -50,18 +50,23 @@ export function createClient(opts: ClientOptions): Client {
       ...(req.headers ?? {}),
     };
 
+    // One deadline for the whole operation (fetch attempts + retry wait),
+    // not per-attempt — so worst-case latency is bounded by timeoutMs and the
+    // retry sleep is cancellable if the deadline fires while we're waiting.
+    const deadline = AbortSignal.timeout(timeoutMs);
+
     const doFetch = (): Promise<Response> =>
       fetch(url, {
         method,
         headers,
         body: hasBody ? JSON.stringify(effectiveBody) : undefined,
-        signal: AbortSignal.timeout(timeoutMs),
+        signal: deadline,
       });
 
     let res = await doFetch();
     if (retryOn429 && shouldRetry(res)) {
       const delay = retryDelayMs(res);
-      await sleep(delay);
+      await sleep(delay, deadline);
       res = await doFetch();
     }
 

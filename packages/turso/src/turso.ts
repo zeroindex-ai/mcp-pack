@@ -49,7 +49,7 @@ function client(): Client {
 
 export async function tg<T>(
   path: string,
-  query: Record<string, string | number | undefined> = {}
+  query: Record<string, string | number | boolean | undefined> = {}
 ): Promise<T> {
   const slug = encodeURIComponent(getOrgSlug());
   return client()<T>({

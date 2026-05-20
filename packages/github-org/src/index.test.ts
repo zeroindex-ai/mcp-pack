@@ -54,4 +54,133 @@ describe('github-org MCP server', () => {
     expect(structured.login).toBe('abhi');
     expect(structured.id).toBe(42);
   });
+
+  it('list_org_repos returns the MCP text-content envelope with a trimmed projection', async () => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+      new Response(
+        JSON.stringify([
+          {
+            id: 1,
+            name: 'mcp-pack',
+            full_name: 'zeroindex-ai/mcp-pack',
+            private: true,
+            description: 'MCP server pack',
+          },
+        ])
+      )
+    );
+    const { client } = await connectClient();
+
+    const result = await client.callTool({
+      name: 'list_org_repos',
+      arguments: { org: 'zeroindex-ai' },
+    });
+
+    const content = result.content as Array<{ type: string; text: string }>;
+    expect(content).toHaveLength(1);
+    const structured = result.structuredContent as {
+      repos: Array<{ name: string; full_name: string; private: boolean }>;
+    };
+    expect(structured.repos[0]!.name).toBe('mcp-pack');
+    expect(structured.repos[0]!.full_name).toBe('zeroindex-ai/mcp-pack');
+    expect(structured.repos[0]!.private).toBe(true);
+  });
+
+  it('list_pull_requests returns the MCP text-content envelope', async () => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+      new Response(
+        JSON.stringify([{ number: 7, title: 'Wire abort signal', state: 'open', user: { login: 'abhi' } }])
+      )
+    );
+    const { client } = await connectClient();
+
+    const result = await client.callTool({
+      name: 'list_pull_requests',
+      arguments: { owner: 'zeroindex-ai', repo: 'mcp-pack' },
+    });
+
+    const content = result.content as Array<{ type: string; text: string }>;
+    expect(content).toHaveLength(1);
+    const structured = result.structuredContent as {
+      pull_requests: Array<{ number: number; title: string; user?: string }>;
+    };
+    expect(structured.pull_requests[0]!.number).toBe(7);
+    expect(structured.pull_requests[0]!.user).toBe('abhi');
+  });
+
+  it('list_issues excludes pull requests from the results', async () => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+      new Response(
+        JSON.stringify([
+          { number: 10, title: 'Real issue', state: 'open', user: { login: 'abhi' } },
+          {
+            number: 11,
+            title: 'A PR masquerading as an issue',
+            state: 'open',
+            user: { login: 'abhi' },
+            pull_request: { url: 'https://api.github.com/...' },
+          },
+        ])
+      )
+    );
+    const { client } = await connectClient();
+
+    const result = await client.callTool({
+      name: 'list_issues',
+      arguments: { owner: 'zeroindex-ai', repo: 'mcp-pack' },
+    });
+
+    const content = result.content as Array<{ type: string; text: string }>;
+    expect(content).toHaveLength(1);
+    const structured = result.structuredContent as {
+      issues: Array<{ number: number; title: string }>;
+    };
+    expect(structured.issues).toHaveLength(1);
+    expect(structured.issues[0]!.number).toBe(10);
+  });
+
+  it('list_workflow_runs returns the MCP text-content envelope with a trimmed projection', async () => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          total_count: 1,
+          workflow_runs: [
+            {
+              id: 99,
+              name: 'CI',
+              status: 'completed',
+              conclusion: 'success',
+              head_branch: 'main',
+            },
+          ],
+        })
+      )
+    );
+    const { client } = await connectClient();
+
+    const result = await client.callTool({
+      name: 'list_workflow_runs',
+      arguments: { owner: 'zeroindex-ai', repo: 'mcp-pack', workflow: 'ci.yml' },
+    });
+
+    const content = result.content as Array<{ type: string; text: string }>;
+    expect(content).toHaveLength(1);
+    const structured = result.structuredContent as {
+      runs: Array<{ id: number; status: string; conclusion?: string | null; branch?: string }>;
+    };
+    expect(structured.runs[0]!.id).toBe(99);
+    expect(structured.runs[0]!.conclusion).toBe('success');
+    expect(structured.runs[0]!.branch).toBe('main');
+  });
+
+  it('surfaces an HTTP error as an MCP tool error (isError) on a non-2xx response', async () => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response('Bad credentials', { status: 401 }));
+    const { client } = await connectClient();
+
+    const result = await client.callTool({ name: 'get_authenticated_user', arguments: {} });
+
+    expect(result.isError).toBe(true);
+    const content = result.content as Array<{ type: string; text: string }>;
+    expect(content[0]!.text).toMatch(/HTTP 401/);
+  });
 });

@@ -220,6 +220,48 @@ describe('createClient — retry', () => {
     expect(fetchSpy).toHaveBeenCalledTimes(1);
   });
 
+  it('passes a per-call deadline AbortSignal to fetch, reused across both attempts', async () => {
+    const fetchSpy = vi
+      .spyOn(globalThis, 'fetch')
+      .mockResolvedValueOnce(new Response('rl', { status: 429, headers: { 'retry-after': '0' } }))
+      .mockResolvedValueOnce(new Response(JSON.stringify({ ok: true })));
+
+    const client = createClient({
+      vendor: 'Test',
+      baseUrl: 'https://api.example.com',
+      auth: { kind: 'none' },
+    });
+
+    await client({ path: '/x' });
+
+    expect(fetchSpy).toHaveBeenCalledTimes(2);
+    const sig1 = fetchSpy.mock.calls[0]![1]?.signal;
+    const sig2 = fetchSpy.mock.calls[1]![1]?.signal;
+    expect(sig1).toBeInstanceOf(AbortSignal);
+    // One deadline bounds the whole operation: same signal on every attempt.
+    expect(sig1).toBe(sig2);
+  });
+
+  it('bounds the retry wait by the per-call deadline (rejects rather than waiting out a long delay)', async () => {
+    // First response asks for a 60s retry wait; with a 20ms operation deadline,
+    // the abortable sleep must reject well before that, bounding total latency.
+    const fetchSpy = vi
+      .spyOn(globalThis, 'fetch')
+      .mockResolvedValueOnce(new Response('rl', { status: 429, headers: { 'retry-after': '60' } }))
+      .mockResolvedValue(new Response(JSON.stringify({ ok: true })));
+
+    const client = createClient({
+      vendor: 'Test',
+      baseUrl: 'https://api.example.com',
+      auth: { kind: 'none' },
+      timeoutMs: 20,
+    });
+
+    await expect(client({ path: '/x' })).rejects.toThrow();
+    // The retry fetch must never fire — we aborted during the wait.
+    expect(fetchSpy).toHaveBeenCalledTimes(1);
+  });
+
   it('retries on 403 + x-ratelimit-remaining: 0', async () => {
     const fetchSpy = vi
       .spyOn(globalThis, 'fetch')
