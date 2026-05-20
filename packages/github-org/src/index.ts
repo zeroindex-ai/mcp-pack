@@ -106,6 +106,12 @@ export function createServer(): McpServer {
     },
     async () => {
       const data = await gh<AuthenticatedUser>('/user');
+      // Deliberate: the raw `/user` payload includes the token owner's own
+      // `email` (see AuthenticatedUser in github.ts), so that address reaches
+      // the LLM in the text body. This is low-sensitivity — it is the caller's
+      // own email on a self-authenticated, user-initiated call — so unlike
+      // Mercury's ACH-number redaction we surface it as-is. The structured
+      // projection deliberately omits it.
       return {
         content: [{ type: 'text', text: JSON.stringify(data, null, 2) }],
         structuredContent: { login: data.login, id: data.id, name: data.name },
