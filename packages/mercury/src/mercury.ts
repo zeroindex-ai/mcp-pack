@@ -36,7 +36,7 @@ function client(): Client {
 
 export async function mg<T>(
   path: string,
-  query: Record<string, string | number | undefined> = {}
+  query: Record<string, string | number | boolean | undefined> = {}
 ): Promise<T> {
   return client()<T>({ method: 'GET', path, query });
 }

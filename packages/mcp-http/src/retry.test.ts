@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { shouldRetry, retryDelayMs } from './retry.js';
+import { shouldRetry, retryDelayMs, sleep } from './retry.js';
 
 function res(status: number, headers: Record<string, string> = {}): Response {
   return new Response(null, { status, headers });
@@ -68,5 +68,33 @@ describe('retryDelayMs', () => {
 
   it('falls through to default when Retry-After is non-numeric', () => {
     expect(retryDelayMs(res(429, { 'retry-after': 'Wed, 21 Oct 2026 07:28:00 GMT' }))).toBe(1000);
+  });
+});
+
+describe('sleep', () => {
+  it('resolves after the given delay when no signal is supplied', async () => {
+    await expect(sleep(1)).resolves.toBeUndefined();
+  });
+
+  it('resolves after the given delay when the signal never aborts', async () => {
+    await expect(sleep(1, AbortSignal.timeout(60_000))).resolves.toBeUndefined();
+  });
+
+  it('rejects immediately when the signal is already aborted, surfacing the abort reason', async () => {
+    const controller = new AbortController();
+    controller.abort(new Error('already gone'));
+    await expect(sleep(1000, controller.signal)).rejects.toThrow('already gone');
+  });
+
+  it('rejects with the abort reason when the signal aborts mid-wait', async () => {
+    const controller = new AbortController();
+    const p = sleep(10_000, controller.signal);
+    controller.abort(new Error('cancelled mid-wait'));
+    await expect(p).rejects.toThrow('cancelled mid-wait');
+  });
+
+  it('rejects when a deadline AbortSignal.timeout fires during the wait', async () => {
+    // 5ms deadline vs a 10s sleep: the deadline must win and reject.
+    await expect(sleep(10_000, AbortSignal.timeout(5))).rejects.toThrow();
   });
 });
