@@ -11,11 +11,11 @@ Lets you ask things like:
 
 ## Tools
 
-| Tool                | What it does                                                                                                                                                                                            |
-| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `list_accounts`     | Returns every account in your Mercury workspace (checking, treasury, credit cards) with balances. **Run this first** — it doubles as the credential check and surfaces account IDs for the other tools. |
-| `get_account`       | Returns full details for one account by ID.                                                                                                                                                             |
-| `list_transactions` | Returns transactions for an account, filterable by date range (`YYYY-MM-DD`) and paginated via `limit` / `offset`.                                                                                      |
+| Tool                | What it does                                                                                                                                                                                                                                                       |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `list_accounts`     | Returns every account in your Mercury workspace (checking, treasury, credit cards) with balances. **Run this first** — it doubles as the credential check and surfaces account IDs for the other tools. ACH numbers redacted by default (see [Privacy](#privacy)). |
+| `get_account`       | Returns full details for one account by ID. ACH numbers redacted by default (see [Privacy](#privacy)).                                                                                                                                                             |
+| `list_transactions` | Returns transactions for an account, filterable by date range (`YYYY-MM-DD`) and paginated via `limit` / `offset`.                                                                                                                                                 |
 
 All three are **read-only**. No transfers, no recipient management, no destructive actions. Mutating tools deliberately omitted; coming in a later release behind an explicit opt-in.
 
@@ -23,7 +23,7 @@ All three are **read-only**. No transfers, no recipient management, no destructi
 
 This is a banking server. Two specifics worth stating before you wire it up:
 
-- **ACH account and routing numbers are REDACTED by default.** `get_account` returns `accountNumber` and `routingNumber` as `"***REDACTED***"` unless the caller explicitly passes `includeBankNumbers: true`. The default keeps the raw ACH digits from being piped into your LLM context just because the model decided to look up an account. Set the flag to `true` only when the user has actually asked to see the numbers.
+- **ACH account and routing numbers are REDACTED by default.** Both `list_accounts` and `get_account` return `accountNumber` and `routingNumber` as `"***REDACTED***"` unless the caller explicitly passes `includeBankNumbers: true`. This holds for the very first call the README tells you to make — the raw ACH digits never reach your LLM context just because the model listed or looked up an account. Set the flag to `true` only when the user has actually asked to see the numbers.
 - **Your Mercury API token authorizes writes**, even though this package only calls GET endpoints. Treat it like a banking credential: keep it out of source control, rotate if exposed, and use a dedicated token for this MCP server (not your one general-purpose token).
 - **Data flow.** Mercury → this process → your MCP client → the LLM you've configured. Nothing is cached, persisted, or logged by this server. Pick your LLM client accordingly.
 
