@@ -21,6 +21,9 @@ function getToken(): string {
   return token;
 }
 
+// Built fresh on every call (cheap — just closure + config). Rebuilding per
+// request means a changed MERCURY_API_TOKEN in the environment is picked up
+// without restarting; there is no connection to pool, so nothing is wasted.
 function client(): Client {
   return createClient({
     vendor: 'Mercury',

@@ -4,7 +4,7 @@ import { shouldRetry, retryDelayMs, sleep } from './retry.js';
 function buildUrl(
   baseUrl: string,
   path: string,
-  query?: Record<string, string | number | undefined>
+  query?: Record<string, string | number | boolean | undefined>
 ): string {
   // Preserve full path under baseUrl: ensure baseUrl ends with /, strip a
   // leading / from path so URL() doesn't replace the baseUrl's path segment.

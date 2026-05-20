@@ -22,6 +22,9 @@ function getToken(): string {
   return token;
 }
 
+// Built fresh on every call (cheap — just closure + config). Rebuilding per
+// request means a changed GITHUB_TOKEN in the environment is picked up without
+// restarting; there is no connection to pool, so nothing is wasted.
 function client(): Client {
   return createClient({
     vendor: 'GitHub',
@@ -39,14 +42,7 @@ export async function gh<T>(
   path: string,
   query: Record<string, string | number | boolean | undefined> = {}
 ): Promise<T> {
-  // Re-narrow boolean values to strings for the shared client (which accepts
-  // string | number | undefined). Matches existing call-site behaviour.
-  const stringified: Record<string, string | number | undefined> = {};
-  for (const [k, v] of Object.entries(query)) {
-    if (v === undefined) continue;
-    stringified[k] = typeof v === 'boolean' ? String(v) : v;
-  }
-  return client()<T>({ method: 'GET', path, query: stringified });
+  return client()<T>({ method: 'GET', path, query });
 }
 
 export { HttpError };
