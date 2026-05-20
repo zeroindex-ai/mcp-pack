@@ -148,6 +148,11 @@ export function createServer(): McpServer {
         from,
         to,
       });
+      // Deliberate content/structuredContent projection: the text `content`
+      // carries the full vendor payload (per-instance breakdown plus the
+      // rollup), while `structuredContent` exposes only `data.database.total`.
+      // Programmatic consumers get a stable total for cost/quota questions; the
+      // richer per-instance detail stays available as text for the LLM.
       return {
         content: [{ type: 'text', text: JSON.stringify(data.database, null, 2) }],
         structuredContent: { usage: data.database.total },

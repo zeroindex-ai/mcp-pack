@@ -5,7 +5,8 @@
 // level; this package uses only GET endpoints, but the token itself can
 // still authorize write operations elsewhere — keep it secret.
 //
-// Endpoint paths verified against Mercury API v1 (stable since launch).
+// Endpoint paths verified against Mercury Treasury API v1 docs
+// (docs.mercury.com) on 2026-05-20; v1 has been stable since launch.
 // The `list_accounts` tool exists precisely to validate token + network
 // at runtime — call it first if anything looks off.
 
