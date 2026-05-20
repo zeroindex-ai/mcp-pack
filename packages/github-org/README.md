@@ -102,6 +102,8 @@ This server makes outbound HTTPS calls to `api.github.com` only. It stores nothi
 
 Data that flows through this process when tools are called: repo metadata (names, descriptions, languages), PR titles + bodies + commit refs, issue titles + bodies + labels + assignees, workflow run status. Pick your MCP client (and the LLM behind it) accordingly.
 
+Each tool returns the full raw GitHub vendor object as its `content` text body, while `structuredContent` is a deliberately curated projection. This asymmetry is intentional: GitHub org/repo/PR/issue data is low-sensitivity public-API metadata, so surfacing the raw payload is useful and not a leak — unlike the higher-sensitivity servers in this pack (e.g. mercury), where the text body is intentionally redacted.
+
 ## License
 
 MIT — see [LICENSE](../../LICENSE) at the monorepo root.

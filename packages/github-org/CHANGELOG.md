@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Changed
+
+- `outputSchema`s now use `.passthrough()` on every vendor-shaped object, matching the porkbun / mercury / turso convention so harmless vendor-API additions can't make clients reject `structuredContent`.
+
+### Documentation
+
+- Documented that the raw GitHub vendor object in each tool's `content` text body is intentional (low-sensitivity public-API data), while `structuredContent` is the curated projection — a stated decision, not an oversight.
+
 ## [0.2.1] - 2026-05-18
 
 No functional changes. Version bumped to keep `mcp-pack` packages in lockstep with the `mcp-mercury` / `mcp-porkbun` / `mcp-turso` 0.2.1 patch. This package was unaffected because every tool maps the vendor response to an explicit projection before returning `structuredContent`, so the strict output schemas don't see unknown keys.

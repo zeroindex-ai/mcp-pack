@@ -18,20 +18,24 @@ import {
 // consumption while the text body keeps the raw vendor shape.
 const listDatabasesOutput = z.object({
   databases: z.array(
-    z.object({
-      name: z.string(),
-      hostname: z.string().optional(),
-      region: z.string().optional(),
-    })
+    z
+      .object({
+        name: z.string(),
+        hostname: z.string().optional(),
+        region: z.string().optional(),
+      })
+      .passthrough()
   ),
 });
 
 const getDatabaseOutput = z.object({
-  database: z.object({
-    name: z.string(),
-    hostname: z.string().optional(),
-    region: z.string().optional(),
-  }),
+  database: z
+    .object({
+      name: z.string(),
+      hostname: z.string().optional(),
+      region: z.string().optional(),
+    })
+    .passthrough(),
 });
 
 const getDatabaseUsageOutput = z.object({
@@ -47,11 +51,13 @@ const getDatabaseUsageOutput = z.object({
 
 const listGroupsOutput = z.object({
   groups: z.array(
-    z.object({
-      name: z.string(),
-      primary: z.string().optional(),
-      locations: z.array(z.string()).optional(),
-    })
+    z
+      .object({
+        name: z.string(),
+        primary: z.string().optional(),
+        locations: z.array(z.string()).optional(),
+      })
+      .passthrough()
   ),
 });
 
