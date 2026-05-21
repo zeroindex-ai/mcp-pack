@@ -15,11 +15,11 @@
     "format:check": "prettier --check ."
   },
   "devDependencies": {
-    "@eslint/js": "^9",
+    "@eslint/js": "^10",
     "@modelcontextprotocol/sdk": "^1.29.0",
     "@types/node": "^25",
     "@vitest/coverage-v8": "^4",
-    "eslint": "^9",
+    "eslint": "^10",
     "prettier": "^3.8.3",
     "tsx": "^4",
     "typescript": "^6",
