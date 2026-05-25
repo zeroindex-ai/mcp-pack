@@ -1,0 +1,31 @@
+{
+  "accounts": [
+    {
+      "id": "00000000-0000-0000-0000-000000000001",
+      "name": "FAKE Operating Account",
+      "accountNumber": "0000000000",
+      "routingNumber": "000000000",
+      "status": "active",
+      "type": "depository",
+      "createdAt": "2024-01-01T00:00:00Z",
+      "availableBalance": 0,
+      "currentBalance": 0,
+      "kind": "checking",
+      "nickname": null,
+      "legalBusinessName": "EXAMPLE BUSINESS LLC"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000002",
+      "name": "FAKE Savings Account",
+      "accountNumber": "0000000000",
+      "routingNumber": "000000000",
+      "status": "active",
+      "type": "depository",
+      "createdAt": "2024-01-01T00:00:00Z",
+      "availableBalance": 0,
+      "currentBalance": 0,
+      "kind": "savings",
+      "nickname": "Reserve"
+    }
+  ]
+}

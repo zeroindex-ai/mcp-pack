@@ -1,0 +1,33 @@
+{
+  "total": 1,
+  "transactions": [
+    {
+      "amount": 0,
+      "bankDescription": "EXAMPLE DEBIT",
+      "counterpartyId": "00000000-0000-0000-0000-0000000000c1",
+      "counterpartyName": "EXAMPLE COUNTERPARTY",
+      "counterpartyNickname": null,
+      "createdAt": "2026-01-01T00:00:00Z",
+      "dashboardLink": "https://mercury.com/transactions/example",
+      "details": null,
+      "estimatedDeliveryDate": null,
+      "failedAt": null,
+      "feeId": null,
+      "id": "00000000-0000-0000-0000-0000000000t1",
+      "kind": "externalTransfer",
+      "note": null,
+      "externalMemo": null,
+      "postedAt": "2026-01-01T00:00:00Z",
+      "reasonForFailure": null,
+      "status": "sent",
+      "systemTransactionId": null,
+      "attachments": [],
+      "currencyExchangeInfo": null,
+      "compliantWithReceiptPolicy": null,
+      "hasGeneratedReceipt": null,
+      "creditAccountPeriodId": null,
+      "mercuryCategory": null,
+      "generalLedgerCodeName": null
+    }
+  ]
+}

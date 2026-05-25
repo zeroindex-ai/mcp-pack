@@ -64,6 +64,9 @@ export function createClient(opts: ClientOptions): Client {
       });
 
     let res = await doFetch();
+    // Deliberate single retry (not an oversight): every caller here is a
+    // read-only idempotent GET, so one retry safely covers a transient
+    // rate-limit/429 blip without masking a sustained outage behind a retry storm.
     if (retryOn429 && shouldRetry(res)) {
       const delay = retryDelayMs(res);
       await sleep(delay, deadline);
