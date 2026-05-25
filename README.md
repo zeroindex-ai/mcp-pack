@@ -36,6 +36,9 @@ See each package's README for configuration (required env vars) and `claude_desk
 - **Read-first.** Initial releases expose read-only tools. Mutating tools land in later versions once the read surface has stabilized.
 - **No magic.** Tools are typed with Zod, errors propagate plainly, no hidden retries that hide vendor failures.
 
+For how the monorepo fits together — the shared client, the per-server pattern,
+the redaction posture, and how to add a server — see [ARCHITECTURE.md](ARCHITECTURE.md).
+
 ## Repo layout
 
 ```
