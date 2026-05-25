@@ -32,6 +32,10 @@ function mergeBody(
   return body;
 }
 
+// Each server builds its client fresh per request (see the per-server `client()`
+// helpers). That's deliberate and cheap: a `createClient` call is just a closure
+// over config, there's no connection pool to reuse, and rebuilding means a
+// credential changed in the environment is picked up without a restart.
 export function createClient(opts: ClientOptions): Client {
   const { vendor, baseUrl, auth, defaultHeaders = {}, timeoutMs = 30_000, retryOn429 = true } = opts;
 

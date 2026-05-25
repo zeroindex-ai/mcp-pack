@@ -66,8 +66,37 @@ describe('retryDelayMs', () => {
     expect(retryDelayMs(res(429))).toBe(1000);
   });
 
-  it('falls through to default when Retry-After is non-numeric', () => {
-    expect(retryDelayMs(res(429, { 'retry-after': 'Wed, 21 Oct 2026 07:28:00 GMT' }))).toBe(1000);
+  it('parses Retry-After as an HTTP-date relative to a fake now()', () => {
+    const nowMs = Date.parse('Wed, 21 Oct 2026 07:28:00 GMT');
+    const future = new Date(nowMs + 4000).toUTCString();
+    expect(retryDelayMs(res(429, { 'retry-after': future }), () => nowMs)).toBe(4000);
+  });
+
+  it('clamps an HTTP-date Retry-After at 60000ms', () => {
+    const nowMs = Date.parse('Wed, 21 Oct 2026 07:28:00 GMT');
+    const future = new Date(nowMs + 600_000).toUTCString();
+    expect(retryDelayMs(res(429, { 'retry-after': future }), () => nowMs)).toBe(60_000);
+  });
+
+  it('returns 0 when an HTTP-date Retry-After is in the past', () => {
+    const nowMs = Date.parse('Wed, 21 Oct 2026 07:28:00 GMT');
+    const past = new Date(nowMs - 5000).toUTCString();
+    expect(retryDelayMs(res(429, { 'retry-after': past }), () => nowMs)).toBe(0);
+  });
+
+  it('falls back to the default when Retry-After is a malformed value', () => {
+    expect(retryDelayMs(res(429, { 'retry-after': 'not-a-date-or-number' }))).toBe(1000);
+  });
+
+  it('falls back to x-ratelimit-reset when Retry-After is malformed', () => {
+    const nowMs = 1_700_000_000_000;
+    const resetEpochSec = (nowMs + 2000) / 1000;
+    expect(
+      retryDelayMs(
+        res(429, { 'retry-after': 'garbage', 'x-ratelimit-reset': String(resetEpochSec) }),
+        () => nowMs
+      )
+    ).toBe(2000);
   });
 });
 
