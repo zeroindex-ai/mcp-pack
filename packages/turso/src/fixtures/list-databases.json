@@ -1,0 +1,32 @@
+{
+  "databases": [
+    {
+      "Name": "example-db",
+      "DbId": "00000000-0000-0000-0000-000000000001",
+      "Hostname": "example-db-exampleorg.turso.io",
+      "block_reads": false,
+      "block_writes": false,
+      "regions": ["ord", "fra"],
+      "primaryRegion": "ord",
+      "group": "default",
+      "delete_protection": false,
+      "parent": null
+    },
+    {
+      "Name": "example-db-branch",
+      "DbId": "00000000-0000-0000-0000-000000000002",
+      "Hostname": "example-db-branch-exampleorg.turso.io",
+      "block_reads": false,
+      "block_writes": true,
+      "regions": ["ord"],
+      "primaryRegion": "ord",
+      "group": "default",
+      "delete_protection": true,
+      "parent": {
+        "id": "00000000-0000-0000-0000-000000000001",
+        "name": "example-db",
+        "branched_at": "2026-01-01T00:00:00Z"
+      }
+    }
+  ]
+}
