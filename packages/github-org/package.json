@@ -1,6 +1,6 @@
 {
   "name": "@zeroindex-ai/mcp-github-org",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "MCP server exposing read-only GitHub org and repo APIs to Claude and other MCP clients",
   "type": "module",
   "bin": {
