@@ -16,7 +16,7 @@ Lets you ask things like:
 | `list_domains`     | Returns every domain in the account with status, expiry, auto-renew, and (optionally) labels. Supports pagination. |
 | `list_dns_records` | Returns every DNS record (A, AAAA, CNAME, MX, TXT, etc.) for a given domain.                                       |
 
-All three are read-only. Mutating tools (renew, edit DNS) deliberately omitted in v0.1; coming in a later release.
+All three are read-only. Mutating tools (renew, edit DNS) are deliberately omitted in the current 0.2.x line; coming in a later release.
 
 ## Install
 

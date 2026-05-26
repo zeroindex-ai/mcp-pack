@@ -19,7 +19,7 @@ Lets you ask things like:
 | `list_issues`            | Issues for a repo (PRs are excluded).                                                                         |
 | `list_workflow_runs`     | Recent GitHub Actions runs (filter by workflow file, branch, event, status).                                  |
 
-All five are **read-only**. Mutating tools (create issue, close PR, manage secrets) deliberately omitted in v0.1.
+All five are **read-only**. Mutating tools (create issue, close PR, manage secrets) are deliberately omitted in the current 0.2.x line.
 
 ## Install
 

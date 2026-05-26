@@ -1,6 +1,6 @@
 {
   "name": "@zeroindex-ai/mcp-turso",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "MCP server exposing read-only Turso Platform API (databases, groups, usage) to Claude and other MCP clients",
   "type": "module",
   "bin": {

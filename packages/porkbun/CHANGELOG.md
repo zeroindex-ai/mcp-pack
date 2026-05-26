@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.2.2] - 2026-05-25
+
+No functional changes. Version bumped to keep `mcp-pack` packages in lockstep with the `mcp-mercury@0.2.2` `list_accounts` redaction fix.
+
 ## [0.2.1] - 2026-05-18
 
 ### Fixed

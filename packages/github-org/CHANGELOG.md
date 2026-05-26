@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.2.2] - 2026-05-25
+
 ### Changed
 
 - `outputSchema`s now use `.passthrough()` on every vendor-shaped object, matching the porkbun / mercury / turso convention so harmless vendor-API additions can't make clients reject `structuredContent`.
