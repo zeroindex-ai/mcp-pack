@@ -24,6 +24,27 @@ at publish time. Builds are plain `tsc` (no bundler), tests are `vitest`,
 linting is flat-config ESLint, and formatting is Prettier — configured once at
 the repo root and inherited by every package.
 
+## Data flow
+
+A single server, from credentials to the MCP client:
+
+```
+env vars ──▶ createClient(opts)  ──▶ McpServer        ──▶ StdioServerTransport ──▶ MCP client
+(per-vendor   (@zeroindex-ai/         (registers each      (stdio; connected        (Claude
+ creds, read   mcp-http: auth,         tool with a Zod      only when index.ts        Desktop/
+ per request)  30s timeout, 1×         input + .pass-       is invoked directly)      Code, Cursor,
+               retry, HttpError)       through() output)                              Zed, …)
+                     │
+                     ▼
+              vendor HTTP API
+              (Porkbun / Mercury /
+               GitHub / Turso)
+```
+
+The `<vendor>.ts` client builds a fresh `createClient` instance per request (cheap;
+picks up rotated credentials without a restart) and calls the vendor API; `index.ts`
+wires the typed helpers into MCP tools and the stdio transport.
+
 ## The shared HTTP client
 
 `@zeroindex-ai/mcp-http` is the one piece of shared runtime code. It exists so

@@ -1,6 +1,8 @@
-# @zeroindex-ai/\_http
+# @zeroindex-ai/mcp-http
 
-Internal HTTP client shared by mcp-pack vendor wrappers. Not published.
+Small HTTP client shared by the `@zeroindex-ai/mcp-*` servers. Published to npm
+(public, since v0.2.0) so the four server packages resolve a real version range when
+their `workspace:*` dependency is rewritten at publish time.
 
 Handles: auth (bearer/body/none), 30s timeout, 429 + x-ratelimit-remaining retry, structured HttpError.
 
