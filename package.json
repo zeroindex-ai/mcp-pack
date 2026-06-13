@@ -20,7 +20,7 @@
     "@types/node": "^25",
     "@vitest/coverage-v8": "^4",
     "eslint": "^10",
-    "prettier": "^3.8.3",
+    "prettier": "^3.8.4",
     "tsx": "^4",
     "typescript": "^6",
     "typescript-eslint": "^8",
