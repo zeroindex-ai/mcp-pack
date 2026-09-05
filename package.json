@@ -30,7 +30,8 @@
   "packageManager": "pnpm@10.33.2",
   "pnpm": {
     "overrides": {
-      "fast-uri@<3.1.6": ">=3.1.6"
+      "fast-uri@<3.1.6": ">=3.1.6",
+      "postcss@<8.5.23": ">=8.5.23"
     }
   }
 }
